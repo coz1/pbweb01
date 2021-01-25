@@ -1,18 +1,32 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <h1>Hi {{ identifier }}</h1>
+    <p>{{ secretMessage }}</p>
+    <input type="button" value="Logout" @click="logout" />
   </div>
 </template>
-
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+import AuthService from '@/services/AuthService';
 
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld,
+  data() {
+    return {
+      secretMessage: '',
+      identifier: '',
+    };
+  },
+  async created() {
+    if (!this.$store.getters.isLoggedIn) {
+      this.$router.push('/login');
+    }
+    this.identifier = this.$store.getters.getUser.identifier;
+    this.secretMessage = await AuthService.getSecretContent();
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch('logout');
+      this.$router.push('/login');
+    },
   },
 };
 </script>
